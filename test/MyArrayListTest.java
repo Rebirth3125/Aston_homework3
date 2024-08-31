@@ -137,4 +137,35 @@ public class MyArrayListTest {
         assertEquals(list, anotherList);
         assertEquals(list.hashCode(), anotherList.hashCode());
     }
+
+    @Test
+    public void testEnsureCapacityIncreasesWhenNeeded() {
+        MyArrayList<Integer> list = new MyArrayList<>();
+
+        for (int i = 0; i < 11; i++) {
+            list.add(i);
+        }
+
+        assertEquals(11, list.size());
+
+        assertEquals(10, list.get(10));
+    }
+
+    @Test
+    public void testEnsureCapacityDoesNotIncreaseWhenNotNeeded() {
+        MyArrayList<Integer> list = new MyArrayList<>();
+
+        for (int i = 0; i < 10; i++) {
+            list.add(i);
+        }
+
+        assertEquals(10, list.size());
+
+        assertEquals(0, list.get(0));
+        assertEquals(9, list.get(9));
+
+        list.add(10);
+        assertEquals(11, list.size());
+        assertEquals(10, list.get(10));
+    }
 }

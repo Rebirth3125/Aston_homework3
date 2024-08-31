@@ -3,9 +3,7 @@ import java.util.Collection;
 import java.util.Objects;
 
 public class MyArrayList<T> implements MyList<T> {
-    // Константы для начального размера и коэффициента увеличения
     private static final int DEFAULT_CAPACITY = 10;
-    private static final int RESIZE_FACTOR = 2;
 
     private Object[] elements;
     private int size;
@@ -17,7 +15,7 @@ public class MyArrayList<T> implements MyList<T> {
 
     @Override
     public void add(T element) {
-        ensureCapacity(size + 1); // Включает добавляемый элемент
+        ensureCapacity(size + 1);
         elements[size++] = element;
     }
 
@@ -37,7 +35,7 @@ public class MyArrayList<T> implements MyList<T> {
         if (numMoved > 0) {
             System.arraycopy(elements, index + 1, elements, index, numMoved);
         }
-        elements[--size] = null; // Помощь GC
+        elements[--size] = null;
         return removedElement;
     }
 
@@ -87,23 +85,30 @@ public class MyArrayList<T> implements MyList<T> {
     // Метод для увеличения емкости массива при необходимости
     private void ensureCapacity(int minCapacity) {
         if (minCapacity > elements.length) {
-            resize(elements.length * RESIZE_FACTOR);
+            resize(calculateNewCapacity(minCapacity));
         }
     }
 
-    // Метод для увеличения емкости до заданного размера
+    // Метод для вычисления нового размера емкости на основе текущего размера и минимальной емкости
+    private int calculateNewCapacity(int minCapacity) {
+        int oldCapacity = elements.length;
+        int newCapacity = oldCapacity + (oldCapacity >> 1); // Увеличиваем на 50%
+        if (newCapacity < minCapacity) {
+            newCapacity = minCapacity;
+        }
+        return newCapacity;
+    }
+
     private void resize(int newCapacity) {
         elements = Arrays.copyOf(elements, newCapacity);
     }
 
-    // Метод для проверки валидности индекса
     private void checkIndex(int index) {
         if (index >= size || index < 0) {
             throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
         }
     }
 
-    // Метод для обмена элементов в массиве
     private void swap(int i, int j) {
         Object temp = elements[i];
         elements[i] = elements[j];
@@ -139,22 +144,5 @@ public class MyArrayList<T> implements MyList<T> {
         int result = Objects.hash(size);
         result = 31 * result + Arrays.hashCode(elements);
         return result;
-    }
-
-    public static void main(String[] args) {
-        MyArrayList<Integer> list = new MyArrayList<>();
-        list.add(3);
-        list.add(1);
-        list.add(4);
-        list.add(1);
-        list.add(5);
-
-        System.out.println("Before sorting:");
-        System.out.println(list);
-
-        list.bubbleSort();
-
-        System.out.println("After sorting:");
-        System.out.println(list);
     }
 }
